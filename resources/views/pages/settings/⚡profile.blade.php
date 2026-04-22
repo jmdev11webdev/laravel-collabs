@@ -13,6 +13,8 @@ new #[Title('Profile settings')] class extends Component {
 
     public string $name = '';
     public string $email = '';
+    public string $role = '';
+    public string $country = '';
 
     /**
      * Mount the component.
@@ -21,6 +23,8 @@ new #[Title('Profile settings')] class extends Component {
     {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->role = Auth::user()->role ?? '';
+        $this->country = Auth::user()->country ?? '';
     }
 
     /**
@@ -101,6 +105,29 @@ new #[Title('Profile settings')] class extends Component {
                 @endif
             </div>
 
+            <!-- Roles -->
+            <flux:select 
+                wire:model="role"
+                name="role"
+                :label="__('Account role')"
+                required
+                placeholder="Select your role"
+            >
+                <option value="developer">Developer</option>
+                <option value="client">Client</option>
+            </flux:select>
+
+            <!-- Country Selection -->
+            <flux:select 
+                wire:model="country"
+                name="country" 
+                :label="__('Your Country')"
+                class="w-full rounded-lg border px-3 py-2 bg-white dark:bg-zinc-900"
+                required
+            >
+                <option value="">Loading countries...</option>
+            </flux:select>
+
             <div class="flex items-center gap-4">
                 <flux:button variant="primary" type="submit" data-test="update-profile-button">
                     {{ __('Save') }}
@@ -112,4 +139,43 @@ new #[Title('Profile settings')] class extends Component {
             <livewire:pages::settings.delete-user-form />
         @endif
     </x-pages::settings.layout>
+
+    <!-- restcountries api -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const select = document.querySelector('select[name="country"]');
+
+            if (!select) {
+                console.error('Select not found');
+                return;
+            }
+
+            try {
+                const res = await fetch('https://restcountries.com/v3.1/all?fields=name');
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error: ${res.status}`);
+                }
+
+                const countries = await res.json();
+
+                countries.sort((a, b) =>
+                    a.name.common.localeCompare(b.name.common)
+                );
+
+                select.innerHTML = '<option value="">Select country</option>';
+
+                countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country.name.common;
+                    option.textContent = country.name.common;
+                    select.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('FETCH ERROR:', error);
+                select.innerHTML = '<option>Error loading countries</option>';
+            }
+        });
+    </script>
 </section>
