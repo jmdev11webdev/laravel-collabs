@@ -26,22 +26,37 @@ return new class extends Migration
         $table->string('repository')->nullable();
         $table->string('starter_kit')->default('No Starter Kit');
         $table->string('status')->default('open');
+        $table->boolean('is_public')->default(false);
+        $table->date('deadline')->nullable();
+        $table->unsignedInteger('max_collaborators')->nullable();
+        $table->string('contact_email');
         $table->timestamps();
     });
-        // chk stands for check for checking constraints
-        DB::statement("
-            ALTER TABLE projects
-            ADD CONSTRAINT chk_starter_kit
-            CHECK (starter_kit IN ('$values'))
-        ");
+        // since we are useing postgres, we are only requiring pgsql
+        if (DB::getDriverName() === 'pgsql') {
+            // chk stands for check for checking constraints
+            DB::statement("
+                ALTER TABLE projects
+                ADD CONSTRAINT chk_starter_kit
+                CHECK (starter_kit IN ('$values'))
+            ");
 
-        // chk stands for check for checking constraints
-        // status constraints
-        DB::statement("
-            ALTER TABLE projects
-            ADD CONSTRAINT chk_status
-            CHECK (status IN ('open', 'in_progress', 'completed', 'cancelled'))
-        ");
+            // chk stands for check for checking constraints
+            // status constraints
+            DB::statement("
+                ALTER TABLE projects
+                ADD CONSTRAINT chk_status
+                CHECK (status IN ('open', 'in_progress', 'completed', 'cancelled'))
+            ");
+
+            // chk stands for check for checking constraints
+            // deadline constraints
+            DB::statement("
+                ALTER TABLE projects
+                ADD CONSTRAINT chk_deadline
+                CHECK (deadline IS NULL OR deadline >= CURRENT_DATE)
+            ");
+        }
     }
 
     /**
@@ -49,8 +64,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE projects DROP CONSTRAINT IF EXISTS chk_status');
-        DB::statement('ALTER TABLE projects DROP CONSTRAINT IF EXISTS chk_starter_kit');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE projects DROP CONSTRAINT IF EXISTS chk_starter_kit');
+            DB::statement('ALTER TABLE projects DROP CONSTRAINT IF EXISTS chk_status');
+            DB::statement('ALTER TABLE projects DROP CONSTRAINT IF EXISTS chk_deadline');
+        }
+
         Schema::dropIfExists('projects');
     }
 };

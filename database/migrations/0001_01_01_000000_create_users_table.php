@@ -39,7 +39,13 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
 
-        DB::statement("ALTER TABLE users ADD CONSTRAINT role_check CHECK (role IN ('developer', 'client'))");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("
+                ALTER TABLE users
+                ADD CONSTRAINT chk_user_role
+                CHECK (role IN ('developer', 'client'))
+            ");
+        }
     }
 
     /**
@@ -47,6 +53,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE users DROP CONSTRAINT IF EXISTS chk_user_role');
+        }
+        
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
