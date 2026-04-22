@@ -19,11 +19,13 @@ return new class extends Migration
         
         Schema::create('projects', function (Blueprint $table) {
         $table->id();
+        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
         $table->string('title');
         $table->text('description')->nullable();
         $table->string('link')->nullable();
         $table->string('repository')->nullable();
         $table->string('starter_kit')->default('No Starter Kit');
+        $table->string('status')->default('open');
         $table->timestamps();
     });
         // chk stands for check for checking constraints
@@ -32,6 +34,14 @@ return new class extends Migration
             ADD CONSTRAINT chk_starter_kit
             CHECK (starter_kit IN ('$values'))
         ");
+
+        // chk stands for check for checking constraints
+        // status constraints
+        DB::statement("
+            ALTER TABLE projects
+            ADD CONSTRAINT chk_status
+            CHECK (status IN ('open', 'in_progress', 'completed', 'cancelled'))
+        ");
     }
 
     /**
@@ -39,7 +49,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE projects DROP CONSTRAINT chk_starter_kit');
+        DB::statement('ALTER TABLE projects DROP CONSTRAINT IF EXISTS chk_status');
+        DB::statement('ALTER TABLE projects DROP CONSTRAINT IF EXISTS chk_starter_kit');
         Schema::dropIfExists('projects');
     }
 };
