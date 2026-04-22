@@ -106,10 +106,10 @@
             
             <!-- developer wrapped div -->
             <div id="developer" class="w-full flex justify-center items-center flex-col gap-4 transition-all duration-300 ease-in-out">
-                <h1 class="text-white sm:text-6xl text-4xl font-semibold">
+                <h1 class="text-white sm:text-5xl text-4xl font-semibold">
                     Welcome, Laravel Collaborators!
                 </h1>
-                <p class="text-zinc-400 sm:text-3xl text-2xl sm:px-0 px-4">
+                <p class="text-zinc-400 sm:text-2xl text-2xl sm:px-0 px-4">
                     Find, Collaborate, and Build with other developers!
                 </p>
                 <div class="flex sm:flex-row flex-col items-center gap-2">
