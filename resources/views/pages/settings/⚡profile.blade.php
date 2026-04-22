@@ -111,7 +111,6 @@ new #[Title('Profile settings')] class extends Component {
                 name="role"
                 :label="__('Account role')"
                 required
-                placeholder="Select your role"
             >
                 <option value="developer">Developer</option>
                 <option value="client">Client</option>
