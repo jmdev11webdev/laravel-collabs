@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="ai-generated-logo.png" alt="Laravel Collabs Logo" width="120" />
+  <img width="521" height="511" alt="ai-generated-logo" src="https://github.com/user-attachments/assets/cf9bb22d-e4a4-4bf7-bcca-02e59f4d285c" width="120"/>
   <h1 align="center">Laravel Collabs</h1>
   <p align="center"><i>Where Developers Meet Opportunities.</i></p>
 </p>
